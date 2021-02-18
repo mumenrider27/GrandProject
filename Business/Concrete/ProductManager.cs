@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -17,6 +18,19 @@ namespace Business.Concrete
             _productDal = productDal;
         }
 
+        public IResult Add(Product product)
+        {
+            // business codes
+
+            if (product.ProductName.Length<2)
+            {
+                return new ErrorResult("The accepted input is at least 2 characters");
+            }
+            _productDal.Add(product);
+
+            return new SuccessResult("Product added");
+        }
+
         public List<Product> GetAll()
         {
             // Business code // A business class does not instantiate (new) other classes.
@@ -26,6 +40,11 @@ namespace Business.Concrete
         public List<Product> GetAllByCategoryId(int id)
         {
             return _productDal.GetAll(p => p.CategoryId == id);
+        }
+
+        public Product GetById(int productId)
+        {
+            return _productDal.Get(p => p.ProductId == productId);
         }
 
         public List<Product> GetByUnitPrice(decimal min, decimal max)
