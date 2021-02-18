@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -24,17 +25,22 @@ namespace Business.Concrete
 
             if (product.ProductName.Length<2)
             {
-                return new ErrorResult("The accepted input is at least 2 characters");
+                return new ErrorResult(Messages.ProductNameInvalid);
             }
             _productDal.Add(product);
 
-            return new SuccessResult("Product added");
+            return new SuccessResult(Messages.ProductAdded);
         }
 
-        public List<Product> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
+            if (DateTime.Now.Hour == 22)
+            {
+                return new ErrorDataResult();
+            }
+
             // Business code // A business class does not instantiate (new) other classes.
-            return _productDal.GetAll();
+            return new SuccessDataResult<List<Product>> (_productDal.GetAll(),true,"Products have been listed");
         }
 
         public List<Product> GetAllByCategoryId(int id)
