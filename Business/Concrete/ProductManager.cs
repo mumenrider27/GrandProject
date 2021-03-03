@@ -32,7 +32,7 @@ namespace Business.Concrete
         public IResult Add(Product product)
         {
             // Prevent duplicate product names from being added
-            IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName),CheckIfProductCountOfCategoryCorrect(product.CategoryId), CheckIfCategoryLimitExceeded());
+            IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName),CheckIfProductCountOfCategoryIsCorrect(product.CategoryId), CheckIfCategoryLimitExceeded());
 
             if (result != null)
             {
@@ -78,14 +78,21 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Update(Product product)
         {
+            var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
+
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+
             throw new NotImplementedException();
         }
 
-        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        private IResult CheckIfProductCountOfCategoryIsCorrect(int categoryId)
         {
             // Select count(*) from products where caregoryId=1
             var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
-            if (result >= 10)
+            if (result >= 15)
             {
                 return new ErrorResult(Messages.ProductCountOfCategoryError);
             }
