@@ -31,7 +31,6 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            // Prevent duplicate product names from being added
             IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName),CheckIfProductCountOfCategoryIsCorrect(product.CategoryId), CheckIfCategoryLimitExceeded());
 
             if (result != null)
